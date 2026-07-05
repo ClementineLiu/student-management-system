@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.student.dao.CommonDao">
+
+    <!-- 统计聚合：count / sum / avg / max / min -->
+    <select id="selectCal" resultType="java.util.Map">
+        SELECT
+        count(*) as `count`,
+        sum(${column}) as `sum`,
+        avg(${column}) as `avg`,
+        max(${column}) as `max`,
+        min(${column}) as `min`
+        FROM ${table}
+    </select>
+
+    <!-- 分组统计：按某列分组，统计每组数量 -->
+    <select id="selectGroup" resultType="java.util.Map">
+        SELECT ${column} as name, count(*) as value
+        FROM ${table}
+        GROUP BY ${column}
+    </select>
+
+    <!-- 按值统计：按某列分组，计算另一列的平均值 -->
+    <select id="selectValue" resultType="java.util.Map">
+        SELECT ${xColumn} as name, avg(${yColumn}) as value
+        FROM ${table}
+        GROUP BY ${xColumn}
+    </select>
+
+</mapper>

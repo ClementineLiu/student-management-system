@@ -27,7 +27,7 @@
 
     <div style="margin-bottom:15px">
       <el-button type="primary" size="small" @click="openDialog()">新增学生</el-button>
-      <el-button type="danger" size="small" :disabled="selection.length===0" @click="handleBatchDelete">批量删除</el-button>
+      <el-button type="danger" size="small" @click="handleBatchDelete">{{ selection.length > 0 ? `批量删除(${selection.length})` : '批量删除' }}</el-button>
     </div>
 
     <el-table :data="tableData" border stripe v-loading="loading" @selection-change="handleSelectionChange">
@@ -174,7 +174,10 @@ export default {
       }).catch(() => {})
     },
     handleBatchDelete() {
-      if (this.selection.length === 0) return
+      if (this.selection.length === 0) {
+        this.$message.warning('请先勾选要删除的学生记录（点击表格左侧复选框）')
+        return
+      }
       this.$confirm(`确定删除选中的 ${this.selection.length} 名学生吗？`, '提示', { type: 'warning' }).then(() => {
         request.post('/student/delete', this.selection.map(r => r.id)).then(() => {
           this.$message.success('批量删除成功'); this.loadData()

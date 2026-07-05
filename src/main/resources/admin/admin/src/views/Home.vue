@@ -146,18 +146,29 @@ export default {
     },
     initDistChart() {
       const chart = echarts.init(this.$refs.distChart)
-      request.get('/cal/score/score').then(res => {
-        // 分数分布由后端 CommonController 提供，此处先展示占位
+      request.get('/scoreDistribution').then(res => {
+        if (!res.data) {
+          chart.setOption({ title: { text: '暂无数据', left: 'center', top: 'center', textStyle: { color: '#999', fontSize: 14 } } })
+          return
+        }
+        const data = res.data
+        const values = [
+          data.range_0_59 || 0,
+          data.range_60_69 || 0,
+          data.range_70_79 || 0,
+          data.range_80_89 || 0,
+          data.range_90_100 || 0
+        ]
         chart.setOption({
           tooltip: { trigger: 'axis' },
           xAxis: { type: 'category', data: ['0-59', '60-69', '70-79', '80-89', '90-100'] },
-          yAxis: { type: 'value', name: '人数' },
+          yAxis: { type: 'value', name: '人数', minInterval: 1 },
           series: [{
-            type: 'bar', data: [0, 0, 0, 0, 0],
-            itemStyle: { color: '#67C23A' }
+            type: 'bar', data: values,
+            itemStyle: { color: '#67C23A' },
+            label: { show: true, position: 'top' }
           }]
         })
-        chart.setOption({ title: { text: '等待数据...', left: 'center', top: 'center', textStyle: { color: '#999', fontSize: 14 } } })
       }).catch(() => {
         chart.setOption({ title: { text: '暂无数据', left: 'center', top: 'center', textStyle: { color: '#999', fontSize: 14 } } })
       })
